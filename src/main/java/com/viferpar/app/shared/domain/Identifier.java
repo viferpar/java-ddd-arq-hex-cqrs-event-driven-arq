@@ -3,14 +3,16 @@ package com.viferpar.app.shared.domain;
 import java.util.UUID;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 @EqualsAndHashCode
+@Getter
+@Setter
 public abstract class Identifier {
 
-  @Getter
-  final protected String value;
+  private final String value;
 
-  public Identifier(String value) {
+  protected Identifier(String value) {
     ensureValidUuid(value);
     this.value = value;
   }
