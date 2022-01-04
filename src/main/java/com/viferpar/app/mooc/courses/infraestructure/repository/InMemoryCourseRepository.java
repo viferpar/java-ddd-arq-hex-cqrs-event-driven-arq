@@ -5,9 +5,7 @@ import com.viferpar.app.mooc.courses.domain.CourseId;
 import com.viferpar.app.mooc.courses.domain.CourseRepository;
 import java.util.HashMap;
 import java.util.Optional;
-import org.springframework.stereotype.Service;
 
-@Service
 public final class InMemoryCourseRepository implements CourseRepository {
 
   private final HashMap<String, Course> courses = new HashMap<>();

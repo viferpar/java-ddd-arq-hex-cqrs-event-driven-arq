@@ -7,17 +7,15 @@ import com.viferpar.app.mooc.courses.domain.Course;
 import com.viferpar.app.mooc.courses.domain.CourseIdMother;
 import com.viferpar.app.mooc.courses.domain.CourseMother;
 import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-final class InMemoryCourseRepositoryTest {
+@SpringBootTest
+class JPACourseRepositoryTest {
 
-  InMemoryCourseRepository repository;
-
-  @BeforeEach
-  void setUp() {
-    repository = new InMemoryCourseRepository();
-  }
+  @Autowired
+  JPACourseRepository repository;
 
   @Test
   void shouldSaveAValidCourse() {
