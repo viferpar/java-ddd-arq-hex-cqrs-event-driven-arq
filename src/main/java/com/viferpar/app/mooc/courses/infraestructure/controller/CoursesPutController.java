@@ -22,7 +22,7 @@ public final class CoursesPutController {
   private final CourseCreator courseCreator;
 
   @PutMapping("courses/{id}")
-  public ResponseEntity<String> create(@PathVariable String id, @RequestBody Request request) {
+  public ResponseEntity create(@PathVariable String id, @RequestBody Request request) {
     courseCreator.create(new CreateCourseRequest(id, request.getName(), request.getDuration()));
     return new ResponseEntity(HttpStatus.CREATED);
   }
