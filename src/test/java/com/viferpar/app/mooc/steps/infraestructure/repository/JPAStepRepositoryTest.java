@@ -11,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,20 +24,17 @@ class JPAStepRepositoryTest {
   @Autowired
   JPAStepRepository repository;
 
-  @Test
-  void save_a_step() {
-    for (Step step : steps()) {
-      repository.save(step);
-    }
+  @ParameterizedTest
+  @MethodSource("steps")
+  void save_a_step(Step step) {
+    repository.save(step);
   }
 
-  @Test
-  void return_an_existing_step() {
-    for (Step step : steps()) {
-      repository.save(step);
-
-      assertEquals(Optional.of(step), repository.search(step.getId()));
-    }
+  @ParameterizedTest
+  @MethodSource("steps")
+  void return_an_existing_step(Step step) {
+    repository.save(step);
+    assertEquals(Optional.of(step), repository.search(step.getId()));
   }
 
   @Test
@@ -43,7 +42,7 @@ class JPAStepRepositoryTest {
     assertFalse(repository.search(StepIdMother.random()).isPresent());
   }
 
-  private List<? extends Step> steps() {
+  private static List<? extends Step> steps() {
     return Arrays.asList(ChallengeStepMother.random(), VideoStepMother.random());
   }
 
