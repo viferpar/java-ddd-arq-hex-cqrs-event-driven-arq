@@ -26,6 +26,7 @@ public class JPACoursesCounter {
   private Integer total;
 
   @Type(type = "com.viferpar.app.shared.infraestructure.hibernate.JsonListType")
+  @Column(columnDefinition = "json")
   private List<String> existingCourses;
 
 }

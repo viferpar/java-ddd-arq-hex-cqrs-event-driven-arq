@@ -9,7 +9,9 @@ import com.viferpar.app.mooc.courses.domain.CourseMother;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 final class InMemoryCourseRepositoryTest {
 
   InMemoryCourseRepository repository;

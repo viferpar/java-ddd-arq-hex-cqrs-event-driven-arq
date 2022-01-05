@@ -18,10 +18,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public abstract class ApplicationTestCase {
 
   @Autowired
@@ -29,11 +31,8 @@ public abstract class ApplicationTestCase {
   @Autowired
   private EventBus eventBus;
 
-  protected void assertResponse(
-      String endpoint,
-      Integer expectedStatusCode,
-      String expectedResponse
-  ) throws Exception {
+  protected void assertResponse(String endpoint, Integer expectedStatusCode,
+      String expectedResponse) throws Exception {
     ResultMatcher response = expectedResponse.isEmpty()
         ? content().string("")
         : content().json(expectedResponse);
