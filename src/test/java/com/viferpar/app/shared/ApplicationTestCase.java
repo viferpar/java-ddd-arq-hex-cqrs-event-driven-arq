@@ -6,6 +6,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.viferpar.app.shared.domain.bus.event.DomainEvent;
+import com.viferpar.app.shared.domain.bus.event.EventBus;
+import java.util.Arrays;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,7 +19,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 
-
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -24,6 +26,8 @@ public abstract class ApplicationTestCase {
 
   @Autowired
   private MockMvc mockMvc;
+  @Autowired
+  private EventBus eventBus;
 
   protected void assertResponse(
       String endpoint,
@@ -78,6 +82,10 @@ public abstract class ApplicationTestCase {
         .perform(request(HttpMethod.valueOf(method), endpoint))
         .andExpect(status().is(expectedStatusCode))
         .andExpect(content().string(""));
+  }
+
+  protected void givenISendEventsToTheBus(DomainEvent... domainEvents) {
+    eventBus.publish(Arrays.asList(domainEvents));
   }
 
 }

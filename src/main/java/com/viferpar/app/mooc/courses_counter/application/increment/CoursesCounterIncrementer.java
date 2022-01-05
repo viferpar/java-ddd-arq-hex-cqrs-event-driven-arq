@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public final class CoursesCounterIncrementer {
+public class CoursesCounterIncrementer {
 
   private final CoursesCounterRepository repository;
   private final UuidGenerator uuidGenerator;

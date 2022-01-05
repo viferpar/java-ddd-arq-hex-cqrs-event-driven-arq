@@ -1,12 +1,12 @@
 package com.viferpar.app.shared.infraestructure.hibernate;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -25,6 +25,7 @@ public class JsonListType implements UserType, DynamicParameterizedType {
 
     private static final int[] SQL_TYPES = new int[]{Types.LONGVARCHAR};
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     private JavaType valueType = null;
     private Class<?> classType = null;
 
@@ -49,29 +50,21 @@ public class JsonListType implements UserType, DynamicParameterizedType {
     }
 
     @Override
-    public Object nullSafeGet(
-        ResultSet rs,
-        String[] names,
+    public Object nullSafeGet(ResultSet rs, String[] names,
         SharedSessionContractImplementor session,
-        Object owner
-    ) throws HibernateException, SQLException {
+        Object owner) throws HibernateException, SQLException {
         return nullSafeGet(rs, names, owner);
     }
 
     @Override
-    public void nullSafeSet(
-        PreparedStatement st,
-        Object value,
-        int index,
-        SharedSessionContractImplementor session
-    ) throws HibernateException, SQLException {
+    public void nullSafeSet(PreparedStatement st, Object value, int index,
+        SharedSessionContractImplementor session) throws HibernateException, SQLException {
         nullSafeSet(st, value, index);
     }
 
     public Object nullSafeGet(ResultSet rs, String[] names, Object owner)
         throws HibernateException, SQLException {
-        String value = rs.getString(names[0]).replace("\"value\"", "").replace("{:", "")
-            .replace("}", "");
+        String value = rs.getString(names[0]);
         Object result = null;
         if (valueType == null) {
             throw new HibernateException("Value type not set.");
@@ -89,8 +82,6 @@ public class JsonListType implements UserType, DynamicParameterizedType {
     public void nullSafeSet(PreparedStatement st, Object value, int index)
         throws HibernateException, SQLException {
         StringWriter sw = new StringWriter();
-        OBJECT_MAPPER.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
-
         if (value == null) {
             st.setNull(index, Types.VARCHAR);
         } else {
@@ -108,10 +99,18 @@ public class JsonListType implements UserType, DynamicParameterizedType {
         if (value == null) {
             return null;
         } else if (valueType.isCollectionLikeType()) {
-            Object newValue = new ArrayList<>();
-            Collection newValueCollection = (Collection) newValue;
-            newValueCollection.addAll((Collection) value);
-            return newValueCollection;
+            try {
+                Object newValue = value.getClass().newInstance();
+                Collection newValueCollection = (Collection) newValue;
+                newValueCollection.addAll((Collection) value);
+                return newValueCollection;
+            } catch (InstantiationException e) {
+                throw new HibernateException(
+                    "Failed to deep copy the collection-like value object.", e);
+            } catch (IllegalAccessException e) {
+                throw new HibernateException(
+                    "Failed to deep copy the collection-like value object.", e);
+            }
         }
 
         return null;
@@ -140,13 +139,33 @@ public class JsonListType implements UserType, DynamicParameterizedType {
     @Override
     public void setParameterValues(Properties parameters) {
         try {
-            Class<?> entityClass = Class.forName(parameters.getProperty("list_of"));
 
-            valueType = OBJECT_MAPPER.getTypeFactory()
-                .constructCollectionType(ArrayList.class, entityClass);
-            classType = List.class;
+            // Get entity class
+            Class<?> entityClass = Class.forName(
+                parameters.getProperty(DynamicParameterizedType.ENTITY));
+            Field property = null;
+
+            // Find the field
+            while (property == null && entityClass != null) {
+                try {
+                    property = entityClass.getDeclaredField(
+                        parameters.getProperty(DynamicParameterizedType.PROPERTY));
+                } catch (NoSuchFieldException e) {
+                    entityClass = entityClass.getSuperclass();
+                }
+            }
+
+            if (property != null) {
+                ParameterizedType listType = (ParameterizedType) property.getGenericType();
+                Class<?> listClass = (Class<?>) listType.getActualTypeArguments()[0];
+                valueType = OBJECT_MAPPER.getTypeFactory()
+                    .constructCollectionType(ArrayList.class, listClass);
+                classType = List.class;
+            }
+
         } catch (ClassNotFoundException e) {
             throw new IllegalArgumentException(e);
         }
     }
+
 }
