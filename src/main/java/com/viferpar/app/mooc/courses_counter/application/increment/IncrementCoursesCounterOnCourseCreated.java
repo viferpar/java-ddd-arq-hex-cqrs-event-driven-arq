@@ -15,7 +15,7 @@ public final class IncrementCoursesCounterOnCourseCreated {
 
   @EventListener
   public void on(CourseCreatedDomainEvent event) {
-    CourseId courseId = new CourseId(event.aggregateId());
+    CourseId courseId = new CourseId(event.getAggregateId());
 
     incrementer.increment(courseId);
   }

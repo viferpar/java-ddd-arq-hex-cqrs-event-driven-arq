@@ -42,8 +42,8 @@ public class CourseCreatedDomainEvent extends DomainEvent {
   }
 
   @Override
-  public HashMap<String, Serializable> toPrimitives() {
-    HashMap<String, Serializable> map = new HashMap<>();
+  public Map<String, Serializable> toPrimitives() {
+    Map<String, Serializable> map = new HashMap<>();
     map.put("name", name);
     map.put("duration", duration);
     return map;

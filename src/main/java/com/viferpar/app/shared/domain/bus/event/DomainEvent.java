@@ -5,7 +5,15 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public abstract class DomainEvent {
 
   private String aggregateId;
@@ -18,15 +26,6 @@ public abstract class DomainEvent {
     this.occurredOn = Utils.dateToString(LocalDateTime.now());
   }
 
-  protected DomainEvent(String aggregateId, String eventId, String occurredOn) {
-    this.aggregateId = aggregateId;
-    this.eventId = eventId;
-    this.occurredOn = occurredOn;
-  }
-
-  protected DomainEvent() {
-  }
-
   public abstract String eventName();
 
   public abstract Map<String, Serializable> toPrimitives();
@@ -37,17 +36,5 @@ public abstract class DomainEvent {
       String eventId,
       String occurredOn
   );
-
-  public String aggregateId() {
-    return aggregateId;
-  }
-
-  public String eventId() {
-    return eventId;
-  }
-
-  public String occurredOn() {
-    return occurredOn;
-  }
 
 }

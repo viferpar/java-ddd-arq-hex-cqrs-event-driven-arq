@@ -1,4 +1,4 @@
-package com.viferpar.app.shared.infraestructure.event.bus;
+package com.viferpar.app.shared.infraestructure.bus.event.spring;
 
 import com.viferpar.app.shared.domain.bus.event.DomainEvent;
 import com.viferpar.app.shared.domain.bus.event.EventBus;

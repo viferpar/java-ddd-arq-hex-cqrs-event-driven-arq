@@ -41,7 +41,7 @@ final class IncrementCoursesCounterOnCourseCreatedTest {
   void itShouldInitializeANewCounter() {
     CourseCreatedDomainEvent event = CourseCreatedDomainEventMother.random();
 
-    CourseId courseId = CourseIdMother.create(event.aggregateId());
+    CourseId courseId = CourseIdMother.create(event.getAggregateId());
     CoursesCounter newCounter = CoursesCounterMother.withOne(courseId);
 
     when(repository.search()).thenReturn(Optional.empty());
@@ -56,7 +56,7 @@ final class IncrementCoursesCounterOnCourseCreatedTest {
   void itShouldIncrementAnExistingCounter() {
     CourseCreatedDomainEvent event = CourseCreatedDomainEventMother.random();
 
-    CourseId courseId = CourseIdMother.create(event.aggregateId());
+    CourseId courseId = CourseIdMother.create(event.getAggregateId());
     CoursesCounter existingCounter = CoursesCounterMother.random();
     CoursesCounter incrementedCounter = CoursesCounterMother.incrementing(existingCounter,
         courseId);
@@ -72,7 +72,7 @@ final class IncrementCoursesCounterOnCourseCreatedTest {
   void itShouldNotIncrementAnAlreadyIncrementedCourse() {
     CourseCreatedDomainEvent event = CourseCreatedDomainEventMother.random();
 
-    CourseId courseId = CourseIdMother.create(event.aggregateId());
+    CourseId courseId = CourseIdMother.create(event.getAggregateId());
     CoursesCounter existingCounter = CoursesCounterMother.withOne(courseId);
 
     when(repository.search()).thenReturn(Optional.of(existingCounter));
